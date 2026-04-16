@@ -713,13 +713,26 @@ const events=[
   '☢️ RED SEA: TANKER CONVOY ATTACK — LNG REROUTING',
 ];
 let eventIdx=0;
-function triggerSimAlert(){
-  const el=document.getElementById('simAlert');
-  el.textContent=events[eventIdx%events.length];eventIdx++;
-  el.classList.remove('show');void el.offsetWidth;el.classList.add('show');
-  setTimeout(()=>el.classList.remove('show'),4500);
+function triggerSimAlert() {
+  const el = document.getElementById('simAlert');
+
+  el.textContent = events[eventIdx % events.length];
+  eventIdx++;
+
+  el.classList.remove('show');
+  void el.offsetWidth;
+  el.classList.add('show');
+
+  setTimeout(() => el.classList.remove('show'), 4500);
+
+  // 🔥 variable next delay (8s–25s random)
+  const nextDelay = Math.floor(Math.random() * 17000) + 8000;
+
+  setTimeout(triggerSimAlert, nextDelay);
 }
-setTimeout(()=>{setInterval(triggerSimAlert,14000);triggerSimAlert();},3000);
+
+// initial boot with small delay
+setTimeout(triggerSimAlert, 3000);
 </script>
 </body>
 </html>
