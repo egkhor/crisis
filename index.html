@@ -3,307 +3,216 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EGK EnergyCrisis AI — Dashboard Preview</title>
+<title>EGK EnergyCrisis AI — Global Energy Command Center</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap');
-  :root {
-    --primary: #00B4FF;
-    --accent: #FF4D00;
-    --green: #00FF88;
-    --gold: #FFB800;
-    --danger: #FF2D55;
-    --bg: #050C18;
-    --surface: #0A1628;
-    --surface2: #0F1E35;
-    --text: #ffffff;
-    --muted: #8BAAC4;
-    --progold: #FFD700;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Share Tech Mono', monospace;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-  /* ====== GRID BACKGROUND ====== */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(0,180,255,0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0,180,255,0.04) 1px, transparent 1px);
-    background-size: 40px 40px;
-    pointer-events: none;
-    z-index: 0;
-  }
-  .container {
-    max-width: 420px;
-    margin: 0 auto;
-    padding: 16px;
-    position: relative;
-    z-index: 1;
-  }
-  /* ====== HEADER ====== */
-  .header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 20px;
-    animation: slideDown 0.6s ease both;
-  }
-  .logo {
-    width: 44px;
-    height: 44px;
-    background: radial-gradient(circle, rgba(0,180,255,0.3), transparent);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 2px solid rgba(0,180,255,0.4);
-    font-size: 20px;
-    animation: logoPulse 3s ease-in-out infinite;
-  }
-  @keyframes logoPulse {
-    0%, 100% { box-shadow: 0 0 10px rgba(0,180,255,0.3); transform: scale(1); }
-    50% { box-shadow: 0 0 24px rgba(0,180,255,0.7); transform: scale(1.05); }
-  }
-  .header-text h1 {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 13px;
-    font-weight: 900;
-    color: var(--text);
-    letter-spacing: 1px;
-  }
-  .header-text p { font-size: 10px; color: var(--muted); margin-top: 2px; }
-  .live-badge {
-    margin-left: auto;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 10px;
-    color: var(--green);
-    font-weight: bold;
-  }
-  .live-dot {
-    width: 8px; height: 8px;
-    background: var(--green);
-    border-radius: 50%;
-    animation: livePulse 1.2s ease-in-out infinite;
-    box-shadow: 0 0 8px var(--green);
-  }
-  @keyframes livePulse {
-    0%, 100% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(1.5); opacity: 0.6; }
-  }
-  /* ====== CARD ====== */
-  .card {
-    background: var(--surface);
-    border-radius: 16px;
-    padding: 16px;
-    margin-bottom: 16px;
-    border: 1px solid rgba(0,180,255,0.15);
-    box-shadow: 0 4px 20px rgba(0,180,255,0.08);
-    animation: fadeUp 0.5s ease both;
-  }
-  .card.gold { border-color: rgba(255,184,0,0.3); box-shadow: 0 4px 20px rgba(255,184,0,0.1); }
-  .card.danger { border-color: rgba(255,45,85,0.3); }
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes slideDown {
-    from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  /* ====== OIL PRICE ====== */
-  .oil-section { animation-delay: 0.1s; }
-  .oil-label { font-size: 10px; color: var(--muted); letter-spacing: 2px; margin-bottom: 6px; }
-  .oil-price-row { display: flex; align-items: flex-end; justify-content: space-between; }
-  .oil-price {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 42px;
-    font-weight: 900;
-    color: var(--primary);
-    text-shadow: 0 0 20px rgba(0,180,255,0.6), 0 0 40px rgba(0,180,255,0.3);
-    line-height: 1;
-    transition: all 0.3s ease;
-  }
-  .oil-unit { font-size: 13px; color: var(--muted); padding-bottom: 6px; margin-left: 4px; }
-  .mini-prices { display: flex; flex-direction: column; gap: 6px; }
-  .mini-card {
-    background: var(--surface2);
-    border-radius: 8px;
-    padding: 6px 10px;
-    text-align: right;
-  }
-  .mini-label { font-size: 9px; color: var(--muted); }
-  .mini-val { font-size: 13px; font-weight: bold; color: var(--text); }
-  /* Sparkline */
-  .sparkline { margin-top: 12px; }
-  canvas { width: 100%; height: 40px; display: block; }
-  /* ====== ALERT TICKER ====== */
-  .ticker-wrap {
-    background: rgba(255,45,85,0.08);
-    border: 1px solid rgba(255,45,85,0.3);
-    border-radius: 10px;
-    overflow: hidden;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    margin-bottom: 16px;
-    animation-delay: 0.2s;
-  }
-  .ticker-inner {
-    display: flex;
-    white-space: nowrap;
-    animation: ticker 28s linear infinite;
-    color: var(--accent);
-    font-size: 12px;
-    font-weight: bold;
-    padding: 0 16px;
-  }
-  .ticker-inner span { margin-right: 60px; }
-  @keyframes ticker {
-    0% { transform: translateX(100vw); }
-    100% { transform: translateX(-100%); }
-  }
-  /* ====== MALAYSIA IMPACT ====== */
-  .impact-section { animation-delay: 0.3s; }
-  .section-header {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 14px;
-  }
-  .section-icon { font-size: 16px; }
-  .section-title {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--text);
-  }
-  .flag { margin-left: auto; font-size: 20px; }
-  .meter-row { margin-bottom: 12px; }
-  .meter-top {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    margin-bottom: 5px;
-  }
-  .meter-icon { font-size: 11px; }
-  .meter-label { font-size: 11px; color: var(--muted); flex: 1; }
-  .meter-val { font-size: 11px; font-weight: bold; }
-  .meter-track {
-    background: rgba(255,255,255,0.06);
-    border-radius: 4px;
-    height: 6px;
-    overflow: hidden;
-  }
-  .meter-fill {
-    height: 100%;
-    border-radius: 4px;
-    transition: width 1.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-    position: relative;
-  }
-  .meter-fill::after {
-    content: '';
-    position: absolute;
-    right: 0; top: 0; bottom: 0;
-    width: 6px;
-    background: rgba(255,255,255,0.5);
-    border-radius: 4px;
-  }
-  /* ====== STATUS GRID ====== */
-  .status-section { animation-delay: 0.4s; }
-  .status-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-top: 12px;
-  }
-  .status-card {
-    background: var(--surface2);
-    border-radius: 12px;
-    padding: 12px;
-    text-align: center;
-    border: 1px solid transparent;
-    transition: all 0.3s;
-    animation: statusAppear 0.4s ease both;
-  }
-  .status-card:hover { transform: translateY(-2px); }
-  @keyframes statusAppear {
-    from { opacity: 0; transform: scale(0.8); }
-    to { opacity: 1; transform: scale(1); }
-  }
-  .status-card:nth-child(1) { animation-delay: 0.5s; border-color: rgba(255,77,0,0.2); }
-  .status-card:nth-child(2) { animation-delay: 0.6s; border-color: rgba(255,184,0,0.2); }
-  .status-card:nth-child(3) { animation-delay: 0.7s; border-color: rgba(0,255,136,0.2); }
-  .status-card:nth-child(4) { animation-delay: 0.8s; border-color: rgba(255,45,85,0.2); }
-  .status-emoji { font-size: 22px; margin-bottom: 4px; }
-  .status-name { font-size: 9px; color: var(--muted); margin-bottom: 3px; }
-  .status-label { font-size: 10px; font-weight: bold; }
-  /* ====== QUICK ACTIONS ====== */
-  .quick-section { animation-delay: 0.5s; }
-  .quick-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-    margin-top: 12px;
-  }
-  .quick-btn {
-    background: rgba(255,255,255,0.04);
-    border-radius: 14px;
-    padding: 12px 6px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.2s;
-    border: 1px solid rgba(255,255,255,0.08);
-  }
-  .quick-btn:hover { transform: scale(1.05); background: rgba(255,255,255,0.08); }
-  .quick-btn:active { transform: scale(0.97); }
-  .quick-icon { font-size: 22px; margin-bottom: 6px; display: block; }
-  .quick-label { font-size: 9px; color: var(--text); line-height: 1.3; }
-  /* ====== FOOTER & APP STORE ====== */
-  .footer {
-    text-align: center;
-    padding: 24px 0 40px;
-    color: var(--muted);
-    font-size: 10px;
-    letter-spacing: 1px;
-    animation: fadeUp 0.5s ease 1s both;
-  }
-  .app-store-badge {
-    display: inline-block;
-    margin: 12px 0 8px;
-    transition: transform 0.2s ease;
-  }
-  .app-store-badge:hover {
-    transform: scale(1.05);
-  }
-  .app-icon {
-    width: 64px;
-    height: 64px;
-    border-radius: 18px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-    margin-bottom: 8px;
-  }
-  .footer strong { color: var(--primary); }
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap');
+:root{
+  --primary:#00B4FF;--accent:#FF4D00;--green:#00FF88;--gold:#FFB800;
+  --danger:#FF2D55;--bg:#050C18;--surface:#0A1628;--surface2:#0F1E35;
+  --text:#ffffff;--muted:#8BAAC4;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Share Tech Mono',monospace;min-height:100vh;overflow-x:hidden;}
+
+/* GRID BG */
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:linear-gradient(rgba(0,180,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,180,255,.04) 1px,transparent 1px);
+  background-size:40px 40px;
+}
+
+/* ══ OCEAN SCENE ══ */
+#ocean-wrap{
+  position:relative;width:100%;height:180px;overflow:hidden;
+  background:linear-gradient(180deg,#030C1A 0%,#051426 40%,#062040 100%);
+  border-bottom:2px solid rgba(0,180,255,.2);
+  box-shadow:0 0 40px rgba(0,180,255,.08) inset;
+}
+#ocean-canvas{position:absolute;inset:0;width:100%;height:100%;}
+
+/* Mushi on ship */
+.mushi-captain{
+  position:absolute;bottom:58px;left:50%;transform:translateX(-50%) translateX(40px);
+  z-index:10;pointer-events:none;
+  animation:shipBob 3s ease-in-out infinite;
+}
+.mushi-captain img{width:44px;filter:drop-shadow(0 4px 12px rgba(255,184,0,.5));}
+.mushi-bubble{
+  position:absolute;bottom:100%;left:50%;transform:translateX(-50%);
+  background:rgba(5,12,24,.92);border:1px solid rgba(255,184,0,.5);
+  border-radius:10px;padding:4px 9px;white-space:nowrap;
+  font-size:9px;color:var(--gold);margin-bottom:4px;
+  animation:bubblePop 0.4s ease both;
+}
+.mushi-bubble::after{
+  content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);
+  border:5px solid transparent;border-top-color:rgba(255,184,0,.5);
+}
+@keyframes bubblePop{from{opacity:0;transform:translateX(-50%) scale(.7)}to{opacity:1;transform:translateX(-50%) scale(1)}}
+@keyframes shipBob{0%,100%{transform:translateX(-50%) translateX(40px) translateY(0) rotate(-.5deg)}50%{transform:translateX(-50%) translateX(40px) translateY(-4px) rotate(.5deg)}}
+
+/* SIM EVENT FLASH */
+#simAlert{
+  position:fixed;top:0;left:0;right:0;z-index:999;
+  background:linear-gradient(90deg,#FF2D00,#FF4D00);
+  color:white;text-align:center;padding:8px 16px;
+  font-size:11px;font-weight:bold;letter-spacing:1px;
+  transform:translateY(-100%);transition:transform .4s ease;
+  font-family:'Orbitron',sans-serif;
+}
+#simAlert.show{transform:translateY(0);}
+
+/* MAIN CONTAINER */
+.container{max-width:440px;margin:0 auto;padding:14px;position:relative;z-index:1;}
+
+/* HEADER */
+.header{display:flex;align-items:center;gap:10px;margin-bottom:16px;animation:slideDown .6s ease both;}
+.logo-wrap{display:flex;align-items:center;gap:8px;}
+.egk-logo{width:40px;height:40px;border-radius:10px;border:1.5px solid rgba(0,180,255,.4);animation:logoPulse 3s ease-in-out infinite;object-fit:cover;}
+@keyframes logoPulse{0%,100%{box-shadow:0 0 10px rgba(0,180,255,.3)}50%{box-shadow:0 0 24px rgba(0,180,255,.7)}}
+.header-text h1{font-family:'Orbitron',sans-serif;font-size:12px;font-weight:900;letter-spacing:1px;}
+.header-text p{font-size:9px;color:var(--muted);margin-top:1px;}
+.live-badge{margin-left:auto;display:flex;align-items:center;gap:5px;font-size:9px;color:var(--green);font-weight:bold;}
+.live-dot{width:8px;height:8px;background:var(--green);border-radius:50%;animation:livePulse 1.2s ease-in-out infinite;box-shadow:0 0 8px var(--green);}
+@keyframes livePulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.5);opacity:.6}}
+@keyframes slideDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+/* CARDS */
+.card{background:var(--surface);border-radius:16px;padding:15px;margin-bottom:14px;border:1px solid rgba(0,180,255,.15);box-shadow:0 4px 20px rgba(0,180,255,.08);animation:fadeUp .5s ease both;}
+.card.gold{border-color:rgba(255,184,0,.3);box-shadow:0 4px 20px rgba(255,184,0,.1);}
+.card.danger{border-color:rgba(255,45,85,.3);}
+.card.purple{border-color:rgba(140,80,255,.3);}
+
+/* OIL PRICE */
+.oil-label{font-size:9px;color:var(--muted);letter-spacing:2px;margin-bottom:5px;}
+.oil-price-row{display:flex;align-items:flex-end;justify-content:space-between;}
+.oil-price{font-family:'Orbitron',sans-serif;font-size:40px;font-weight:900;color:var(--primary);text-shadow:0 0 20px rgba(0,180,255,.6),0 0 40px rgba(0,180,255,.3);line-height:1;transition:all .3s;}
+.oil-unit{font-size:12px;color:var(--muted);padding-bottom:5px;margin-left:3px;}
+.oil-change{font-size:10px;font-weight:bold;padding:2px 7px;border-radius:5px;margin-left:6px;}
+.change-up{color:#00FF88;background:rgba(0,255,136,.1);}
+.change-down{color:#FF2D55;background:rgba(255,45,85,.1);}
+.mini-prices{display:flex;flex-direction:column;gap:5px;}
+.mini-card{background:var(--surface2);border-radius:8px;padding:5px 10px;text-align:right;}
+.mini-label{font-size:8px;color:var(--muted);}
+.mini-val{font-size:12px;font-weight:bold;}
+.sparkline{margin-top:10px;}
+canvas.spark{width:100%;height:36px;display:block;}
+
+/* STRAITS STATUS BAR */
+.straits-bar{
+  display:flex;gap:6px;margin-bottom:14px;animation:fadeUp .5s .15s ease both;
+  overflow-x:auto;padding-bottom:2px;
+}
+.strait{
+  flex:1;min-width:70px;background:var(--surface);border-radius:10px;padding:7px 8px;
+  text-align:center;border:1px solid rgba(0,180,255,.1);
+}
+.strait-name{font-size:8px;color:var(--muted);margin-bottom:3px;}
+.strait-status{font-size:9px;font-weight:bold;}
+.s-clear{color:var(--green);}
+.s-delayed{color:var(--gold);}
+.s-blocked{color:var(--danger);}
+.s-watch{color:var(--accent);}
+
+/* TICKER */
+.ticker-wrap{background:rgba(255,45,85,.08);border:1px solid rgba(255,45,85,.3);border-radius:10px;overflow:hidden;height:34px;display:flex;align-items:center;margin-bottom:14px;animation:fadeUp .5s .2s ease both;}
+.ticker-inner{display:flex;white-space:nowrap;animation:ticker 30s linear infinite;color:var(--accent);font-size:11px;font-weight:bold;padding:0 14px;}
+.ticker-inner span{margin-right:60px;}
+@keyframes ticker{0%{transform:translateX(100vw)}100%{transform:translateX(-100%)}}
+
+/* SECTION HEADER */
+.section-header{display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+.section-icon{font-size:14px;}
+.section-title{font-family:'Orbitron',sans-serif;font-size:12px;font-weight:700;}
+.flag{margin-left:auto;font-size:18px;}
+
+/* METERS */
+.meter-row{margin-bottom:10px;}
+.meter-top{display:flex;align-items:center;gap:6px;margin-bottom:4px;}
+.meter-icon{font-size:10px;}
+.meter-label{font-size:10px;color:var(--muted);flex:1;}
+.meter-val{font-size:10px;font-weight:bold;}
+.meter-track{background:rgba(255,255,255,.06);border-radius:4px;height:5px;overflow:hidden;}
+.meter-fill{height:100%;border-radius:4px;transition:width 1.5s cubic-bezier(.34,1.56,.64,1);position:relative;}
+.meter-fill::after{content:'';position:absolute;right:0;top:0;bottom:0;width:5px;background:rgba(255,255,255,.5);border-radius:4px;}
+
+/* STATUS GRID */
+.status-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:10px;}
+.status-card{background:var(--surface2);border-radius:11px;padding:11px;text-align:center;border:1px solid transparent;transition:all .3s;cursor:default;}
+.status-card:hover{transform:translateY(-2px);}
+.status-card:nth-child(1){border-color:rgba(255,77,0,.2);}
+.status-card:nth-child(2){border-color:rgba(255,184,0,.2);}
+.status-card:nth-child(3){border-color:rgba(0,255,136,.2);}
+.status-card:nth-child(4){border-color:rgba(255,45,85,.2);}
+.status-emoji{font-size:20px;margin-bottom:3px;}
+.status-name{font-size:8px;color:var(--muted);margin-bottom:3px;}
+.status-label{font-size:9px;font-weight:bold;}
+
+/* MUSHI INSIGHT */
+.mushi-insight{display:flex;align-items:center;gap:10px;background:rgba(255,184,0,.06);border:1px solid rgba(255,184,0,.25);border-radius:12px;padding:10px 12px;}
+.mi-mushi img{width:36px;filter:drop-shadow(0 3px 8px rgba(255,184,0,.35));animation:mushiPulse 3s ease-in-out infinite;}
+@keyframes mushiPulse{0%,100%{transform:scale(1) rotate(-2deg)}50%{transform:scale(1.06) rotate(2deg)}}
+.mi-text{font-size:10px;color:var(--gold);line-height:1.5;flex:1;}
+.mi-text strong{color:#FFE080;display:block;margin-bottom:2px;font-size:9px;letter-spacing:1px;}
+
+/* QUICK ACTIONS */
+.quick-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:10px;}
+.quick-btn{background:rgba(255,255,255,.04);border-radius:13px;padding:11px 5px;text-align:center;cursor:pointer;transition:all .2s;border:1px solid rgba(255,255,255,.07);}
+.quick-btn:hover{transform:scale(1.05);background:rgba(255,255,255,.08);}
+.quick-btn:active{transform:scale(.97);}
+.quick-icon{font-size:20px;margin-bottom:5px;display:block;}
+.quick-label{font-size:8px;color:var(--text);line-height:1.3;}
+
+/* AI RECOMMENDATION */
+.ai-reco{background:linear-gradient(135deg,rgba(0,180,255,.07),rgba(140,80,255,.05));border-radius:12px;padding:12px;margin-top:10px;}
+.ai-reco-title{font-size:9px;color:var(--primary);letter-spacing:1.5px;margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.ai-reco-item{display:flex;align-items:flex-start;gap:7px;margin-bottom:6px;font-size:10px;color:#CBD5E1;}
+.ai-dot{width:5px;height:5px;border-radius:50%;background:var(--green);flex-shrink:0;margin-top:4px;}
+
+/* APP FOOTER */
+.footer{text-align:center;padding:20px 0 36px;color:var(--muted);font-size:9px;letter-spacing:1px;animation:fadeUp .5s 1s ease both;}
+.app-icon-big{width:62px;height:62px;border-radius:16px;box-shadow:0 6px 20px rgba(0,0,0,.5);margin-bottom:8px;border:1.5px solid rgba(0,180,255,.3);}
+.app-store-badge{display:inline-block;margin:8px 0 6px;transition:transform .2s;}
+.app-store-badge:hover{transform:scale(1.05);}
+.footer strong{color:var(--primary);}
+.footer-egk-row{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:6px;}
+.footer-egk-logo{width:28px;border-radius:6px;}
+
+/* SCAN LINE */
+@keyframes scanMove{0%{top:-5%}100%{top:105%}}
+.scan-line{position:fixed;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(0,180,255,.25),transparent);pointer-events:none;z-index:998;animation:scanMove 6s linear infinite;}
 </style>
 </head>
 <body>
-<!-- Alert flash -->
-<div class="sim-event" id="simAlert">⚠️ CRISIS EVENT: STRAIT OF HORMUZ BLOCKADE DETECTED</div>
 
+<!-- Scan line effect -->
+<div class="scan-line"></div>
+
+<!-- Crisis Alert Flash -->
+<div id="simAlert">⚠️ CRISIS EVENT: STRAIT OF HORMUZ BLOCKADE DETECTED</div>
+
+<!-- ══ OCEAN SCENE with animated tanker ══ -->
+<div id="ocean-wrap">
+  <canvas id="ocean-canvas"></canvas>
+  <!-- Mushi Captain on bridge -->
+  <div class="mushi-captain" id="mushiShip">
+    <div class="mushi-bubble" id="mushiBubble">⚠️ Tanker alert!</div>
+    <img src="https://egkhor.com.my/home/wp-content/uploads/2026/04/MUSHI.png" alt="Mushi Captain">
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
 <div class="container">
-  <!-- Header -->
+
+  <!-- HEADER -->
   <div class="header">
-    <div class="logo">⚡</div>
-    <div class="header-text">
-      <h1>EGK ENERGY CRISIS AI</h1>
-      <p>Global Energy Command Center</p>
+    <div class="logo-wrap">
+      <img class="egk-logo" src="https://egkhor.com.my/home/wp-content/uploads/2026/02/cropped-IMG_7598.png" alt="EGK Logo">
+      <div class="header-text">
+        <h1>EGK ENERGY CRISIS AI</h1>
+        <p>Global Energy Command Center</p>
+      </div>
     </div>
     <div class="live-badge">
       <div class="live-dot"></div>
@@ -311,31 +220,45 @@
     </div>
   </div>
 
-  <!-- Oil Price Card -->
-  <div class="card oil-section">
-    <div class="oil-label">BRENT CRUDE</div>
+  <!-- STRAITS STATUS -->
+  <div class="straits-bar">
+    <div class="strait"><div class="strait-name">HORMUZ</div><div class="strait-status s-blocked" id="hormuzStat">BLOCKED</div></div>
+    <div class="strait"><div class="strait-name">MALACCA</div><div class="strait-status s-clear" id="malaccaStat">CLEAR</div></div>
+    <div class="strait"><div class="strait-name">RED SEA</div><div class="strait-status s-delayed" id="redseaStat">DELAYED</div></div>
+    <div class="strait"><div class="strait-name">SUEZ</div><div class="strait-status s-watch" id="suezStat">WATCH</div></div>
+    <div class="strait"><div class="strait-name">BOSPHORUS</div><div class="strait-status s-clear" id="bosphorusStat">CLEAR</div></div>
+  </div>
+
+  <!-- OIL PRICE CARD -->
+  <div class="card" style="animation-delay:.05s">
+    <div class="oil-label">BRENT CRUDE · REAL-TIME SIMULATION</div>
     <div class="oil-price-row">
-      <div>
+      <div style="display:flex;align-items:flex-end;gap:4px;">
         <span class="oil-price" id="oilPrice">$87.45</span>
         <span class="oil-unit">/bbl</span>
+        <span class="oil-change change-up" id="oilChange">▲ +1.23%</span>
       </div>
       <div class="mini-prices">
         <div class="mini-card">
-          <div class="mini-label">WTI</div>
-          <div class="mini-val" id="wtiPrice">$85.32</div>
+          <div class="mini-label">WTI CRUDE</div>
+          <div class="mini-val" id="wtiPrice" style="color:#00C8FF">$85.32</div>
         </div>
         <div class="mini-card">
-          <div class="mini-label">LNG</div>
-          <div class="mini-val" id="lngPrice">$36.73</div>
+          <div class="mini-label">LNG SPOT</div>
+          <div class="mini-val" id="lngPrice" style="color:var(--gold)">$36.73</div>
+        </div>
+        <div class="mini-card">
+          <div class="mini-label">PETRONAS</div>
+          <div class="mini-val" id="petronasPrice" style="color:var(--green)">RM24.50</div>
         </div>
       </div>
     </div>
     <div class="sparkline">
-      <canvas id="sparkCanvas" width="380" height="40"></canvas>
+      <canvas class="spark" id="sparkCanvas" width="380" height="36"></canvas>
     </div>
   </div>
 
-  <!-- Alert Ticker -->
+  <!-- ALERT TICKER -->
   <div class="ticker-wrap">
     <div class="ticker-inner">
       <span>⚠️ Strait of Hormuz: Tanker traffic delayed 48hrs</span>
@@ -344,82 +267,71 @@
       <span>📊 Malaysia RON95 subsidy review — Q3 2025</span>
       <span>🌊 Red Sea disruptions push LNG spot prices +12%</span>
       <span>🇸🇦 Saudi Aramco output: 9.8M bpd — below quota</span>
+      <span>🇲🇾 Malaysia energy mix: 38% gas, 31% coal, 26% hydro</span>
     </div>
   </div>
 
-  <!-- Malaysia Impact Card -->
-  <div class="card gold impact-section">
+  <!-- MALAYSIA IMPACT -->
+  <div class="card gold" style="animation-delay:.15s">
     <div class="section-header">
       <span class="section-icon">🚩</span>
-      <span class="section-title">MALAYSIA IMPACT</span>
+      <span class="section-title">MALAYSIA IMPACT INDEX</span>
       <span class="flag">🇲🇾</span>
     </div>
     <div class="meter-row">
-      <div class="meter-top">
-        <span class="meter-icon">⛽</span>
-        <span class="meter-label">FUEL STRESS</span>
-        <span class="meter-val" id="fuelVal" style="color:var(--accent)">78%</span>
-      </div>
+      <div class="meter-top"><span class="meter-icon">⛽</span><span class="meter-label">FUEL STRESS INDEX</span><span class="meter-val" id="fuelVal" style="color:var(--accent)">78%</span></div>
       <div class="meter-track"><div class="meter-fill" id="fuelFill" style="width:0;background:var(--accent)"></div></div>
     </div>
     <div class="meter-row">
-      <div class="meter-top">
-        <span class="meter-icon">🛒</span>
-        <span class="meter-label">FOOD PRICE INDEX</span>
-        <span class="meter-val" id="foodVal" style="color:var(--gold)">63%</span>
-      </div>
+      <div class="meter-top"><span class="meter-icon">🛒</span><span class="meter-label">FOOD PRICE INDEX</span><span class="meter-val" id="foodVal" style="color:var(--gold)">63%</span></div>
       <div class="meter-track"><div class="meter-fill" id="foodFill" style="width:0;background:var(--gold)"></div></div>
     </div>
     <div class="meter-row">
-      <div class="meter-top">
-        <span class="meter-icon">⚡</span>
-        <span class="meter-label">ELECTRICITY COST</span>
-        <span class="meter-val" id="elecVal" style="color:var(--gold)">48%</span>
-      </div>
+      <div class="meter-top"><span class="meter-icon">⚡</span><span class="meter-label">ELECTRICITY COST</span><span class="meter-val" id="elecVal" style="color:var(--gold)">48%</span></div>
       <div class="meter-track"><div class="meter-fill" id="elecFill" style="width:0;background:var(--gold)"></div></div>
     </div>
     <div class="meter-row">
-      <div class="meter-top">
-        <span class="meter-icon">🚌</span>
-        <span class="meter-label">TRANSPORT COST</span>
-        <span class="meter-val" id="transVal" style="color:var(--danger)">72%</span>
-      </div>
+      <div class="meter-top"><span class="meter-icon">🚌</span><span class="meter-label">TRANSPORT COST</span><span class="meter-val" id="transVal" style="color:var(--danger)">72%</span></div>
       <div class="meter-track"><div class="meter-fill" id="transFill" style="width:0;background:var(--danger)"></div></div>
+    </div>
+    <div class="meter-row" style="margin-bottom:0">
+      <div class="meter-top"><span class="meter-icon">💸</span><span class="meter-label">MYR CURRENCY RISK</span><span class="meter-val" id="myrVal" style="color:var(--danger)">65%</span></div>
+      <div class="meter-track"><div class="meter-fill" id="myrFill" style="width:0;background:linear-gradient(90deg,var(--gold),var(--danger))"></div></div>
     </div>
   </div>
 
-  <!-- Global Status -->
-  <div class="card status-section">
+  <!-- MUSHI INSIGHT -->
+  <div class="mushi-insight" style="margin-bottom:14px;animation:fadeUp .5s .25s ease both;">
+    <div class="mi-mushi"><img src="https://egkhor.com.my/home/wp-content/uploads/2026/04/MUSHI.png" alt="Mushi"></div>
+    <div class="mi-text">
+      <strong>🌸 MUSHI ENERGY ADVISOR</strong>
+      <span id="mushiTip">"Hormuz blockade risk is elevated. Malaysia's LNG imports via Red Sea face +18% premium. Recommend monitoring Petronas spot contracts."</span>
+    </div>
+  </div>
+
+  <!-- GLOBAL STATUS -->
+  <div class="card" style="animation-delay:.3s">
     <div class="section-header">
       <span class="section-icon">🌐</span>
       <span class="section-title">GLOBAL SYSTEM STATUS</span>
     </div>
     <div class="status-grid">
-      <div class="status-card">
-        <div class="status-emoji">💧</div>
-        <div class="status-name">OPEC Output</div>
-        <div class="status-label" style="color:var(--accent)">REDUCED</div>
-      </div>
-      <div class="status-card">
-        <div class="status-emoji">🌊</div>
-        <div class="status-name">Hormuz Traffic</div>
-        <div class="status-label" style="color:var(--gold)">DELAYED</div>
-      </div>
-      <div class="status-card">
-        <div class="status-emoji">☀️</div>
-        <div class="status-name">Solar Growth</div>
-        <div class="status-label" style="color:var(--green)">RISING</div>
-      </div>
-      <div class="status-card">
-        <div class="status-emoji">❄️</div>
-        <div class="status-name">LNG Reserves</div>
-        <div class="status-label" style="color:var(--danger)">LOW</div>
-      </div>
+      <div class="status-card"><div class="status-emoji">💧</div><div class="status-name">OPEC Output</div><div class="status-label" style="color:var(--accent)">REDUCED</div></div>
+      <div class="status-card"><div class="status-emoji">🌊</div><div class="status-name">Hormuz Traffic</div><div class="status-label" style="color:var(--danger)" id="hormuzCard">BLOCKED</div></div>
+      <div class="status-card"><div class="status-emoji">☀️</div><div class="status-name">Solar Growth</div><div class="status-label" style="color:var(--green)">RISING</div></div>
+      <div class="status-card"><div class="status-emoji">❄️</div><div class="status-name">LNG Reserves</div><div class="status-label" style="color:var(--danger)" id="lngCard">LOW</div></div>
+    </div>
+    <!-- AI Recommendation -->
+    <div class="ai-reco">
+      <div class="ai-reco-title">🤖 AI STRATEGIC ADVISORY</div>
+      <div class="ai-reco-item"><div class="ai-dot"></div>Diversify LNG sourcing: activate Australia & Qatar spot contracts</div>
+      <div class="ai-reco-item"><div class="ai-dot"></div>Pre-purchase RON95 buffer stock ahead of subsidy review Q3</div>
+      <div class="ai-reco-item"><div class="ai-dot" style="background:var(--gold)"></div>Nuclear SMR fast-track: crisis window narrows deployment advantage</div>
     </div>
   </div>
 
-  <!-- Quick Actions -->
-  <div class="card quick-section">
+  <!-- QUICK ACTIONS -->
+  <div class="card" style="animation-delay:.4s">
     <div class="section-header">
       <span class="section-icon">⚡</span>
       <span class="section-title">QUICK LAUNCH</span>
@@ -429,9 +341,9 @@
         <span class="quick-icon">🔥</span>
         <div class="quick-label">Simulate Crisis</div>
       </div>
-      <div class="quick-btn">
-        <span class="quick-icon">🗺️</span>
-        <div class="quick-label">World Map</div>
+      <div class="quick-btn" onclick="rotateMushiTip()">
+        <span class="quick-icon">🌸</span>
+        <div class="quick-label">Ask Mushi</div>
       </div>
       <div class="quick-btn">
         <span class="quick-icon">🛡️</span>
@@ -439,131 +351,375 @@
       </div>
       <div class="quick-btn">
         <span class="quick-icon">🧠</span>
-        <div class="quick-label">Ask Aida</div>
+        <div class="quick-label">AI Advisor</div>
       </div>
     </div>
   </div>
 
-  <!-- Footer with App Store Badge -->
+  <!-- APP FOOTER -->
   <div class="footer">
-    <strong>EGK ENERGY CRISIS AI</strong><br>
+    <div class="footer-egk-row">
+      <img class="footer-egk-logo" src="https://egkhor.com.my/home/wp-content/uploads/2026/02/cropped-IMG_7598.png" alt="EGK">
+      <strong>EGK ENERGY CRISIS AI</strong>
+    </div>
     Available on the App Store<br>
-    
     <a href="https://apps.apple.com/us/app/egk-energycrisis-ai/id6762322149" target="_blank" class="app-store-badge">
-      <img src="https://is1-ssl.mzstatic.com/image/thumb/PurpleSource221/v4/38/28/3e/38283e19-3827-4c77-de6f-c091091f724f/Placeholder.mill/1024x1024bb.png" 
-           alt="EGK EnergyCrisis AI" class="app-icon">
-      <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" 
-           alt="Download on the App Store" height="40">
+      <img src="https://is1-ssl.mzstatic.com/image/thumb/PurpleSource221/v4/38/28/3e/38283e19-3827-4c77-de6f-c091091f724f/Placeholder.mill/1024x1024bb.png" alt="EGK EnergyCrisis AI" class="app-icon-big"><br>
+      <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" alt="Download on App Store" height="38">
     </a>
-    
     <br>
-    © 2025 EGK Microelectronic Solutions Group Sdn. Bhd.<br>
-    <a href="https://egkhor.com.my" style="color:var(--muted); text-decoration:none;">egkhor.com.my</a>
+    © 2026 EGK Microelectronic Solutions Group Sdn. Bhd.<br>
+    <a href="https://egkhor.com.my" style="color:var(--muted);text-decoration:none;">egkhor.com.my</a>
   </div>
-</div>
+
+</div><!-- /container -->
 
 <script>
-// ===== Oil price live ticker =====
-let basePrice = 87.45;
-const oilEl = document.getElementById('oilPrice');
-const wtiEl = document.getElementById('wtiPrice');
-const lngEl = document.getElementById('lngPrice');
+/* ══ OCEAN / TANKER CANVAS ══ */
+(function(){
+  const canvas=document.getElementById('ocean-canvas');
+  const ctx=canvas.getContext('2d');
+  let W,H,t=0;
+  function resize(){W=canvas.width=canvas.offsetWidth;H=canvas.height=canvas.offsetHeight;}
+  resize();window.addEventListener('resize',resize);
 
-// Sparkline
-const canvas = document.getElementById('sparkCanvas');
-const ctx = canvas.getContext('2d');
-const prices = [];
-for (let i = 0; i < 30; i++) {
-  basePrice += (Math.random() - 0.5) * 1.2;
-  basePrice = Math.max(75, Math.min(105, basePrice));
-  prices.push(basePrice);
+  // Tanker position (moves across)
+  let tankerX=-160;
+  const tankerY_base=0.62; // fraction of height
+
+  // Stars
+  const stars=Array.from({length:40},()=>({x:Math.random(),y:Math.random()*.45,r:.5+Math.random()*1.2,a:.2+Math.random()*.6}));
+  // Smoke puffs
+  const smokes=[];
+
+  function spawnSmoke(){
+    if(smokes.length>18)return;
+    smokes.push({x:tankerX+28,y:H*tankerY_base-52,r:4,a:.5,vx:-.6,vy:-.4,grow:.4});
+  }
+
+  function drawScene(){
+    ctx.clearRect(0,0,W,H);
+    t+=.012;
+
+    // SKY gradient
+    const sky=ctx.createLinearGradient(0,0,0,H*.55);
+    sky.addColorStop(0,'#020810');sky.addColorStop(1,'#062040');
+    ctx.fillStyle=sky;ctx.fillRect(0,0,W,H*.55);
+
+    // Stars
+    stars.forEach(s=>{
+      const twinkle=s.a*(0.5+0.5*Math.sin(t*2+s.x*10));
+      ctx.beginPath();ctx.arc(s.x*W,s.y*H,s.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(180,210,255,${twinkle})`;ctx.fill();
+    });
+
+    // Moon
+    const moonX=W*.82,moonY=H*.14;
+    ctx.save();
+    ctx.shadowBlur=30;ctx.shadowColor='rgba(200,220,255,0.4)';
+    ctx.beginPath();ctx.arc(moonX,moonY,14,0,Math.PI*2);
+    ctx.fillStyle='rgba(220,230,255,0.88)';ctx.fill();
+    ctx.restore();
+    // Moon glow ring
+    ctx.beginPath();ctx.arc(moonX,moonY,20,0,Math.PI*2);
+    ctx.strokeStyle='rgba(200,220,255,0.12)';ctx.lineWidth=4;ctx.stroke();
+
+    // Horizon glow (oil/fire tint from left — crisis)
+    const hglow=ctx.createRadialGradient(W*.12,H*.5,0,W*.12,H*.5,W*.35);
+    hglow.addColorStop(0,'rgba(255,80,0,0.12)');hglow.addColorStop(1,'rgba(255,80,0,0)');
+    ctx.fillStyle=hglow;ctx.fillRect(0,0,W,H*.55);
+
+    // WATER
+    const water=ctx.createLinearGradient(0,H*.54,0,H);
+    water.addColorStop(0,'#052040');water.addColorStop(.4,'#041830');water.addColorStop(1,'#020C18');
+    ctx.fillStyle=water;ctx.fillRect(0,H*.54,W,H*.46);
+
+    // Water shimmer lines
+    for(let w=0;w<6;w++){
+      const wy=H*(.58+w*.065);
+      const shimmer=0.04+0.04*Math.sin(t*1.2+w*1.8);
+      ctx.strokeStyle=`rgba(0,150,255,${shimmer})`;ctx.lineWidth=1;
+      ctx.beginPath();
+      for(let xi=0;xi<W;xi+=3){
+        const y=wy+Math.sin(xi*.025+t*1.5+w*.6)*3;
+        xi===0?ctx.moveTo(xi,y):ctx.lineTo(xi,y);
+      }ctx.stroke();
+    }
+
+    // Moon reflection on water
+    const mRefl=ctx.createLinearGradient(0,H*.55,0,H*.85);
+    mRefl.addColorStop(0,'rgba(200,220,255,0.12)');mRefl.addColorStop(1,'rgba(200,220,255,0)');
+    ctx.fillStyle=mRefl;
+    ctx.fillRect(W*.75,H*.55,W*.14,H*.3);
+
+    // ── SMOKE PUFFS ──
+    spawnSmoke();
+    for(let i=smokes.length-1;i>=0;i--){
+      const sm=smokes[i];
+      sm.x+=sm.vx;sm.y+=sm.vy;sm.r+=sm.grow;sm.a-=.008;
+      if(sm.a<=0){smokes.splice(i,1);continue;}
+      ctx.beginPath();ctx.arc(sm.x,sm.y,sm.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(180,180,180,${sm.a*0.35})`;ctx.fill();
+    }
+
+    // ── OIL TANKER SHIP ──
+    tankerX+=0.55;
+    if(tankerX>W+200)tankerX=-200;
+    const ty=H*tankerY_base+Math.sin(t*.8)*2.5;
+
+    ctx.save();
+    ctx.translate(tankerX,ty);
+
+    // Hull shadow on water
+    ctx.fillStyle='rgba(0,0,0,0.25)';
+    ctx.beginPath();
+    ctx.ellipse(0,28,75,10,0,0,Math.PI*2);
+    ctx.fill();
+
+    // HULL — large tanker body
+    ctx.fillStyle='#1C2C44';
+    ctx.beginPath();
+    ctx.moveTo(-80,0);
+    ctx.lineTo(80,0);
+    ctx.lineTo(88,12);  // bow slope
+    ctx.lineTo(75,26);
+    ctx.lineTo(-75,26);
+    ctx.lineTo(-82,12); // stern slope
+    ctx.closePath();
+    ctx.fill();
+    // hull stripe
+    ctx.fillStyle='#FF3300';
+    ctx.fillRect(-75,18,163,5);
+    // hull highlight
+    ctx.fillStyle='rgba(255,255,255,0.06)';
+    ctx.fillRect(-75,1,160,5);
+
+    // DECK (flat top)
+    ctx.fillStyle='#243550';
+    ctx.fillRect(-70,-4,150,4);
+
+    // DECK DETAILS — pipes and fittings
+    ctx.fillStyle='#1A2F45';
+    for(let p=0;p<6;p++){
+      ctx.fillRect(-55+p*22,-8,16,4);
+    }
+    // pipe connectors
+    ctx.strokeStyle='rgba(0,200,255,0.25)';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(-55,-6);ctx.lineTo(75,-6);ctx.stroke();
+
+    // SUPERSTRUCTURE (bridge block)
+    ctx.fillStyle='#2A3F5A';
+    ctx.beginPath();
+    ctx.roundRect(-15,-30,35,26,3);
+    ctx.fill();
+    // bridge windows
+    for(let w=0;w<3;w++){
+      ctx.fillStyle=`rgba(200,230,255,${0.4+0.3*Math.sin(t*2+w)})`;
+      ctx.beginPath();ctx.roundRect(-9+w*11,-26,8,6,1);ctx.fill();
+    }
+
+    // FUNNEL / CHIMNEY
+    ctx.fillStyle='#1A2F45';
+    ctx.fillRect(-4,-48,10,20);
+    ctx.fillStyle='#FF4D00';
+    ctx.fillRect(-4,-52,10,5);
+    // smoke from funnel
+    const sAlpha=0.3+0.2*Math.sin(t*3);
+    ctx.fillStyle=`rgba(160,160,160,${sAlpha})`;
+    for(let s=0;s<3;s++){
+      ctx.beginPath();
+      ctx.arc(1+s*2,(−62)+s*8+Math.sin(t*2+s)*4,4+s*1.5,0,Math.PI*2);
+      ctx.fill();
+    }
+
+    // MAST
+    ctx.strokeStyle='rgba(150,170,200,0.6)';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(0,-30);ctx.lineTo(0,-58);ctx.stroke();
+    // masthead light
+    const mlight=0.5+0.5*Math.sin(t*4);
+    ctx.save();ctx.shadowBlur=12;ctx.shadowColor='rgba(255,255,100,0.8)';
+    ctx.beginPath();ctx.arc(0,-59,2.5,0,Math.PI*2);
+    ctx.fillStyle=`rgba(255,255,100,${mlight})`;ctx.fill();
+    ctx.restore();
+
+    // RADAR antenna
+    ctx.save();ctx.translate(-5,-44);ctx.rotate(t*2);
+    ctx.strokeStyle='rgba(0,200,255,0.5)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(7,0);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(-7,0);ctx.stroke();
+    ctx.restore();
+
+    // RUNNING LIGHT (green starboard)
+    const rl=0.6+0.4*Math.sin(t*3.5);
+    ctx.beginPath();ctx.arc(80,6,3,0,Math.PI*2);
+    ctx.fillStyle=`rgba(0,255,100,${rl})`;ctx.fill();
+    // red port
+    ctx.beginPath();ctx.arc(-80,6,3,0,Math.PI*2);
+    ctx.fillStyle=`rgba(255,60,60,${rl})`;ctx.fill();
+
+    // BOW WAVE
+    ctx.strokeStyle='rgba(100,200,255,0.3)';ctx.lineWidth=1.5;
+    ctx.beginPath();
+    ctx.moveTo(85,18);
+    ctx.quadraticCurveTo(100,28,115,35);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(85,22);
+    ctx.quadraticCurveTo(102,32,118,38);
+    ctx.stroke();
+    // wake
+    ctx.strokeStyle='rgba(100,200,255,0.12)';ctx.lineWidth=1;
+    for(let wk=1;wk<4;wk++){
+      ctx.beginPath();
+      ctx.moveTo(-80,20);
+      ctx.lineTo(-80-40*wk-Math.sin(t+wk)*8,30+wk*3);
+      ctx.stroke();
+    }
+
+    ctx.restore();
+
+    // ── DISTANT TANKER (smaller, background) ──
+    const dt2X=(tankerX+W*.55)%W;
+    const dt2Y=H*.52+Math.sin(t*.6+1)*1.5;
+    ctx.save();ctx.translate(dt2X,dt2Y);ctx.scale(.35,.35);
+    ctx.fillStyle='rgba(20,35,55,0.7)';
+    ctx.beginPath();
+    ctx.moveTo(-80,0);ctx.lineTo(80,0);ctx.lineTo(88,14);ctx.lineTo(75,28);ctx.lineTo(-75,28);ctx.lineTo(-82,14);
+    ctx.closePath();ctx.fill();
+    ctx.fillStyle='rgba(30,48,70,0.7)';ctx.fillRect(-15,-28,32,24);
+    ctx.restore();
+
+    // OIL SPILL / WARNING ZONE (near horizon)
+    const spillAlpha=0.06+0.04*Math.sin(t*.7);
+    const spill=ctx.createRadialGradient(W*.15,H*.58,0,W*.15,H*.58,W*.2);
+    spill.addColorStop(0,`rgba(180,60,0,${spillAlpha})`);spill.addColorStop(1,'rgba(180,60,0,0)');
+    ctx.fillStyle=spill;ctx.fillRect(0,H*.5,W*.4,H*.2);
+
+    // RADAR SWEEP overlay (top right)
+    const radarCx=W*.88,radarCy=H*.12,radarR=H*.1;
+    ctx.save();
+    ctx.beginPath();ctx.arc(radarCx,radarCy,radarR,0,Math.PI*2);ctx.clip();
+    ctx.strokeStyle='rgba(0,180,255,0.12)';ctx.lineWidth=1;
+    for(let a=0;a<Math.PI*2;a+=Math.PI/4){ctx.beginPath();ctx.moveTo(radarCx,radarCy);ctx.lineTo(radarCx+Math.cos(a)*radarR,radarCy+Math.sin(a)*radarR);ctx.stroke();}
+    const sweepEnd=t*1.2;
+    const sweepGrad=ctx.createConicalGradient?ctx.createConicGradient(sweepEnd-0.6,radarCx,radarCy):null;
+    ctx.strokeStyle=`rgba(0,255,136,0.35)`;ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(radarCx,radarCy);
+    ctx.lineTo(radarCx+Math.cos(sweepEnd)*radarR,radarCy+Math.sin(sweepEnd)*radarR);ctx.stroke();
+    // radar blip
+    const blipA=0.5+0.5*Math.sin(t*5);
+    ctx.beginPath();ctx.arc(radarCx+Math.cos(sweepEnd+.5)*radarR*.65,radarCy+Math.sin(sweepEnd+.5)*radarR*.65,2.5,0,Math.PI*2);
+    ctx.fillStyle=`rgba(0,255,136,${blipA})`;ctx.fill();
+    ctx.restore();
+    // radar label
+    ctx.font='bold 8px Share Tech Mono,monospace';ctx.fillStyle='rgba(0,255,136,0.5)';ctx.textAlign='center';
+    ctx.fillText('RADAR',radarCx,radarCy+radarR+10);
+
+    // Move mushi with tanker
+    const ms=document.getElementById('mushiShip');
+    const pct=Math.max(0,Math.min(1,(tankerX+80)/(W+260)));
+    ms.style.left=(pct*100)+'%';
+    ms.style.transform=`translateX(-50%) translateX(0)`;
+
+    requestAnimationFrame(drawScene);
+  }
+  drawScene();
+})();
+
+/* ══ SPARKLINE ══ */
+let basePrice=87.45;
+const prices=[];
+for(let i=0;i<32;i++){basePrice+=(Math.random()-.5)*1.2;basePrice=Math.max(75,Math.min(105,basePrice));prices.push(basePrice);}
+const sparkCanvas=document.getElementById('sparkCanvas');
+const sCtx=sparkCanvas.getContext('2d');
+
+function drawSparkline(){
+  const w=sparkCanvas.width,h=sparkCanvas.height;
+  sCtx.clearRect(0,0,w,h);
+  const mn=Math.min(...prices),mx=Math.max(...prices),rng=mx-mn||1;
+  const step=w/(prices.length-1);
+  sCtx.beginPath();
+  prices.forEach((p,i)=>{const x=i*step,y=h-((p-mn)/rng)*h;i===0?sCtx.moveTo(x,y):sCtx.lineTo(x,y);});
+  sCtx.strokeStyle='rgba(0,180,255,0.75)';sCtx.lineWidth=2;sCtx.lineJoin='round';sCtx.stroke();
+  const grad=sCtx.createLinearGradient(0,0,0,h);
+  grad.addColorStop(0,'rgba(0,180,255,0.15)');grad.addColorStop(1,'rgba(0,180,255,0)');
+  sCtx.lineTo(w,h);sCtx.lineTo(0,h);sCtx.closePath();sCtx.fillStyle=grad;sCtx.fill();
 }
 
-function drawSparkline() {
-  const w = canvas.width, h = canvas.height;
-  ctx.clearRect(0, 0, w, h);
-  const min = Math.min(...prices), max = Math.max(...prices);
-  const range = max - min || 1;
-  const step = w / (prices.length - 1);
-  ctx.beginPath();
-  prices.forEach((p, i) => {
-    const x = i * step;
-    const y = h - ((p - min) / range) * h;
-    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-  });
-  ctx.strokeStyle = 'rgba(0,180,255,0.7)';
-  ctx.lineWidth = 2;
-  ctx.lineJoin = 'round';
-  ctx.stroke();
-
-  const grad = ctx.createLinearGradient(0, 0, 0, h);
-  grad.addColorStop(0, 'rgba(0,180,255,0.15)');
-  grad.addColorStop(1, 'rgba(0,180,255,0)');
-  ctx.lineTo(w, h); ctx.lineTo(0, h); ctx.closePath();
-  ctx.fillStyle = grad; ctx.fill();
-}
-
-function updatePrices() {
-  basePrice += (Math.random() - 0.5) * 0.8;
-  basePrice = Math.max(75, Math.min(110, basePrice));
-  prices.push(basePrice);
-  if (prices.length > 40) prices.shift();
-  oilEl.textContent = '$' + basePrice.toFixed(2);
-  wtiEl.textContent = '$' + (basePrice - 2.1).toFixed(2);
-  lngEl.textContent = '$' + (basePrice * 0.42).toFixed(2);
+let prevPrice=basePrice;
+function updatePrices(){
+  prevPrice=basePrice;
+  basePrice+=(Math.random()-.5)*.9;
+  basePrice=Math.max(75,Math.min(112,basePrice));
+  prices.push(basePrice);if(prices.length>40)prices.shift();
+  const ch=((basePrice-prevPrice)/prevPrice*100);
+  document.getElementById('oilPrice').textContent='$'+basePrice.toFixed(2);
+  document.getElementById('wtiPrice').textContent='$'+(basePrice-2.1).toFixed(2);
+  document.getElementById('lngPrice').textContent='$'+(basePrice*.42).toFixed(2);
+  document.getElementById('petronasPrice').textContent='RM'+(23+basePrice*.018).toFixed(2);
+  const chEl=document.getElementById('oilChange');
+  chEl.textContent=(ch>=0?'▲ +':'▼ ')+Math.abs(ch).toFixed(2)+'%';
+  chEl.className='oil-change '+(ch>=0?'change-up':'change-down');
   drawSparkline();
 }
-
 drawSparkline();
-setInterval(updatePrices, 2500);
+setInterval(updatePrices,2500);
 
-// ===== Animate impact meters on load =====
-window.addEventListener('load', () => {
-  setTimeout(() => {
-    document.getElementById('fuelFill').style.width = '78%';
-    document.getElementById('foodFill').style.width = '63%';
-    document.getElementById('elecFill').style.width = '48%';
-    document.getElementById('transFill').style.width = '72%';
-  }, 400);
+/* ══ METERS ══ */
+window.addEventListener('load',()=>{
+  setTimeout(()=>{
+    document.getElementById('fuelFill').style.width='78%';
+    document.getElementById('foodFill').style.width='63%';
+    document.getElementById('elecFill').style.width='48%';
+    document.getElementById('transFill').style.width='72%';
+    document.getElementById('myrFill').style.width='65%';
+  },400);
 });
-
-// ===== Live meter fluctuation =====
-function fluctuateMeters() {
-  const fuelPct = 68 + Math.random() * 20;
-  const foodPct = 55 + Math.random() * 18;
-  const elecPct = 40 + Math.random() * 20;
-  const transPct = 62 + Math.random() * 18;
-  document.getElementById('fuelFill').style.width = fuelPct + '%';
-  document.getElementById('foodFill').style.width = foodPct + '%';
-  document.getElementById('elecFill').style.width = elecPct + '%';
-  document.getElementById('transFill').style.width = transPct + '%';
-  document.getElementById('fuelVal').textContent = Math.round(fuelPct) + '%';
-  document.getElementById('foodVal').textContent = Math.round(foodPct) + '%';
-  document.getElementById('elecVal').textContent = Math.round(elecPct) + '%';
-  document.getElementById('transVal').textContent = Math.round(transPct) + '%';
+function fluctuateMeters(){
+  const f=68+Math.random()*20,fo=55+Math.random()*18,e=40+Math.random()*20,tr=62+Math.random()*18,my=55+Math.random()*20;
+  document.getElementById('fuelFill').style.width=f+'%';document.getElementById('fuelVal').textContent=Math.round(f)+'%';
+  document.getElementById('foodFill').style.width=fo+'%';document.getElementById('foodVal').textContent=Math.round(fo)+'%';
+  document.getElementById('elecFill').style.width=e+'%';document.getElementById('elecVal').textContent=Math.round(e)+'%';
+  document.getElementById('transFill').style.width=tr+'%';document.getElementById('transVal').textContent=Math.round(tr)+'%';
+  document.getElementById('myrFill').style.width=my+'%';document.getElementById('myrVal').textContent=Math.round(my)+'%';
 }
-setInterval(fluctuateMeters, 4000);
+setInterval(fluctuateMeters,4000);
 
-// ===== Simulation alert trigger =====
-function triggerSimAlert() {
-  const events = [
-    '⚠️ CRISIS EVENT: STRAIT OF HORMUZ BLOCKADE DETECTED',
-    '🔴 SIMULATION: OIL SUPPLY DROPS 30% — IMPACT LOADING',
-    '⚡ EVENT: MALAYSIA FUEL SUBSIDY REMOVED OVERNIGHT',
-    '🌊 CRISIS: STRAIT OF MALACCA INCIDENT DETECTED',
-  ];
-  const el = document.getElementById('simAlert');
-  el.textContent = events[Math.floor(Math.random() * events.length)];
-  el.classList.remove('show');
-  void el.offsetWidth;
-  el.classList.add('show');
+/* ══ MUSHI TIPS ══ */
+const mushiTips=[
+  '"Hormuz blockade risk is elevated. Malaysia\'s LNG imports via Red Sea face +18% premium. Recommend monitoring Petronas spot contracts."',
+  '"Mushi says: OPEC+ output cuts signal a 90-day price surge. Malaysia\'s fuel subsidy cost could reach RM12B if Brent exceeds $100/bbl."',
+  '"South China Sea tensions threaten Malacca Strait transit. Rerouting via Lombok adds 3-5 days — watch container shipping costs."',
+  '"Solar + nuclear hybrid is Malaysia\'s hedge. EGK\'s AI models show SMR deployment reduces energy import risk by 40% by 2035."',
+  '"Mushi\'s watch: MYR is under pressure. A 10% oil price spike historically weakens MYR by 3-4% — hedge your imports now! 🌸"',
+  '"RON95 subsidy rationalization is overdue. EGK AI models project RM6.2B savings if targeted subsidy is deployed in Q3 2025."',
+];
+let mushiIdx=0;
+function rotateMushiTip(){
+  mushiIdx=(mushiIdx+1)%mushiTips.length;
+  document.getElementById('mushiTip').textContent=mushiTips[mushiIdx];
+  document.getElementById('mushiBubble').textContent='💡 New insight!';
+  setTimeout(()=>{document.getElementById('mushiBubble').textContent='⚠️ Alert updated!';},2000);
 }
+setInterval(rotateMushiTip,8000);
 
-// Auto-trigger sim alert every 15s for demo
-setTimeout(() => {
-  setInterval(triggerSimAlert, 15000);
-  triggerSimAlert();
-}, 3000);
+/* ══ SIM ALERT ══ */
+const events=[
+  '⚠️ CRISIS EVENT: STRAIT OF HORMUZ BLOCKADE DETECTED',
+  '🔴 SIMULATION: OIL SUPPLY DROPS 30% — LOADING IMPACT DATA',
+  '⚡ EVENT: MALAYSIA FUEL SUBSIDY REMOVED OVERNIGHT',
+  '🌊 CRISIS: STRAIT OF MALACCA INCIDENT DETECTED',
+  '🛢️ OPEC+ CUT: 1.2M BPD REMOVED — BRENT SURGING',
+  '☢️ RED SEA: TANKER CONVOY ATTACK — LNG REROUTING',
+];
+let eventIdx=0;
+function triggerSimAlert(){
+  const el=document.getElementById('simAlert');
+  el.textContent=events[eventIdx%events.length];eventIdx++;
+  el.classList.remove('show');void el.offsetWidth;el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),4500);
+}
+setTimeout(()=>{setInterval(triggerSimAlert,14000);triggerSimAlert();},3000);
 </script>
 </body>
 </html>
