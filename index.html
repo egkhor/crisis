@@ -528,7 +528,7 @@ canvas.spark{width:100%;height:36px;display:block;}
     ctx.fillStyle=`rgba(160,160,160,${sAlpha})`;
     for(let s=0;s<3;s++){
       ctx.beginPath();
-      ctx.arc(1+s*2,(−62)+s*8+Math.sin(t*2+s)*4,4+s*1.5,0,Math.PI*2);
+      ctx.arc(1 + s*2, -62 + s*8 + Math.sin(t*2 + s)*4, 4 + s*1.5, 0, Math.PI*2);
       ctx.fill();
     }
 
