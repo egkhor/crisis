@@ -6,7 +6,6 @@
 <title>EGK EnergyCrisis AI — Dashboard Preview</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap');
-
   :root {
     --primary: #00B4FF;
     --accent: #FF4D00;
@@ -20,9 +19,7 @@
     --muted: #8BAAC4;
     --progold: #FFD700;
   }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
-
   body {
     background: var(--bg);
     color: var(--text);
@@ -30,7 +27,6 @@
     min-height: 100vh;
     overflow-x: hidden;
   }
-
   /* ====== GRID BACKGROUND ====== */
   body::before {
     content: '';
@@ -43,7 +39,6 @@
     pointer-events: none;
     z-index: 0;
   }
-
   .container {
     max-width: 420px;
     margin: 0 auto;
@@ -51,7 +46,6 @@
     position: relative;
     z-index: 1;
   }
-
   /* ====== HEADER ====== */
   .header {
     display: flex;
@@ -60,7 +54,6 @@
     margin-bottom: 20px;
     animation: slideDown 0.6s ease both;
   }
-
   .logo {
     width: 44px;
     height: 44px;
@@ -73,12 +66,10 @@
     font-size: 20px;
     animation: logoPulse 3s ease-in-out infinite;
   }
-
   @keyframes logoPulse {
     0%, 100% { box-shadow: 0 0 10px rgba(0,180,255,0.3); transform: scale(1); }
     50% { box-shadow: 0 0 24px rgba(0,180,255,0.7); transform: scale(1.05); }
   }
-
   .header-text h1 {
     font-family: 'Orbitron', sans-serif;
     font-size: 13px;
@@ -87,7 +78,6 @@
     letter-spacing: 1px;
   }
   .header-text p { font-size: 10px; color: var(--muted); margin-top: 2px; }
-
   .live-badge {
     margin-left: auto;
     display: flex;
@@ -108,7 +98,6 @@
     0%, 100% { transform: scale(1); opacity: 1; }
     50% { transform: scale(1.5); opacity: 0.6; }
   }
-
   /* ====== CARD ====== */
   .card {
     background: var(--surface);
@@ -121,7 +110,6 @@
   }
   .card.gold { border-color: rgba(255,184,0,0.3); box-shadow: 0 4px 20px rgba(255,184,0,0.1); }
   .card.danger { border-color: rgba(255,45,85,0.3); }
-
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
@@ -130,7 +118,6 @@
     from { opacity: 0; transform: translateY(-20px); }
     to { opacity: 1; transform: translateY(0); }
   }
-
   /* ====== OIL PRICE ====== */
   .oil-section { animation-delay: 0.1s; }
   .oil-label { font-size: 10px; color: var(--muted); letter-spacing: 2px; margin-bottom: 6px; }
@@ -145,7 +132,6 @@
     transition: all 0.3s ease;
   }
   .oil-unit { font-size: 13px; color: var(--muted); padding-bottom: 6px; margin-left: 4px; }
-
   .mini-prices { display: flex; flex-direction: column; gap: 6px; }
   .mini-card {
     background: var(--surface2);
@@ -155,11 +141,9 @@
   }
   .mini-label { font-size: 9px; color: var(--muted); }
   .mini-val { font-size: 13px; font-weight: bold; color: var(--text); }
-
   /* Sparkline */
   .sparkline { margin-top: 12px; }
   canvas { width: 100%; height: 40px; display: block; }
-
   /* ====== ALERT TICKER ====== */
   .ticker-wrap {
     background: rgba(255,45,85,0.08);
@@ -186,7 +170,6 @@
     0% { transform: translateX(100vw); }
     100% { transform: translateX(-100%); }
   }
-
   /* ====== MALAYSIA IMPACT ====== */
   .impact-section { animation-delay: 0.3s; }
   .section-header {
@@ -203,7 +186,6 @@
     color: var(--text);
   }
   .flag { margin-left: auto; font-size: 20px; }
-
   .meter-row { margin-bottom: 12px; }
   .meter-top {
     display: flex;
@@ -234,7 +216,6 @@
     background: rgba(255,255,255,0.5);
     border-radius: 4px;
   }
-
   /* ====== STATUS GRID ====== */
   .status-section { animation-delay: 0.4s; }
   .status-grid {
@@ -264,7 +245,6 @@
   .status-emoji { font-size: 22px; margin-bottom: 4px; }
   .status-name { font-size: 9px; color: var(--muted); margin-bottom: 3px; }
   .status-label { font-size: 10px; font-weight: bold; }
-
   /* ====== QUICK ACTIONS ====== */
   .quick-section { animation-delay: 0.5s; }
   .quick-grid {
@@ -286,8 +266,7 @@
   .quick-btn:active { transform: scale(0.97); }
   .quick-icon { font-size: 22px; margin-bottom: 6px; display: block; }
   .quick-label { font-size: 9px; color: var(--text); line-height: 1.3; }
-
-  /* ====== FOOTER ====== */
+  /* ====== FOOTER & APP STORE ====== */
   .footer {
     text-align: center;
     padding: 24px 0 40px;
@@ -296,43 +275,29 @@
     letter-spacing: 1px;
     animation: fadeUp 0.5s ease 1s both;
   }
+  .app-store-badge {
+    display: inline-block;
+    margin: 12px 0 8px;
+    transition: transform 0.2s ease;
+  }
+  .app-store-badge:hover {
+    transform: scale(1.05);
+  }
+  .app-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 18px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    margin-bottom: 8px;
+  }
   .footer strong { color: var(--primary); }
-
-  /* ====== SIMULATION FLASH ====== */
-  .sim-event {
-    display: none;
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    background: rgba(255,45,85,0.95);
-    color: white;
-    text-align: center;
-    padding: 14px;
-    font-family: 'Orbitron', sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    z-index: 100;
-    animation: none;
-  }
-  .sim-event.show {
-    display: block;
-    animation: flashAlert 3s ease forwards;
-  }
-  @keyframes flashAlert {
-    0% { transform: translateY(-100%); opacity: 0; }
-    10% { transform: translateY(0); opacity: 1; }
-    80% { transform: translateY(0); opacity: 1; }
-    100% { transform: translateY(-100%); opacity: 0; }
-  }
 </style>
 </head>
 <body>
-
 <!-- Alert flash -->
 <div class="sim-event" id="simAlert">⚠️ CRISIS EVENT: STRAIT OF HORMUZ BLOCKADE DETECTED</div>
 
 <div class="container">
-
   <!-- Header -->
   <div class="header">
     <div class="logo">⚡</div>
@@ -389,7 +354,6 @@
       <span class="section-title">MALAYSIA IMPACT</span>
       <span class="flag">🇲🇾</span>
     </div>
-
     <div class="meter-row">
       <div class="meter-top">
         <span class="meter-icon">⛽</span>
@@ -398,7 +362,6 @@
       </div>
       <div class="meter-track"><div class="meter-fill" id="fuelFill" style="width:0;background:var(--accent)"></div></div>
     </div>
-
     <div class="meter-row">
       <div class="meter-top">
         <span class="meter-icon">🛒</span>
@@ -407,7 +370,6 @@
       </div>
       <div class="meter-track"><div class="meter-fill" id="foodFill" style="width:0;background:var(--gold)"></div></div>
     </div>
-
     <div class="meter-row">
       <div class="meter-top">
         <span class="meter-icon">⚡</span>
@@ -416,7 +378,6 @@
       </div>
       <div class="meter-track"><div class="meter-fill" id="elecFill" style="width:0;background:var(--gold)"></div></div>
     </div>
-
     <div class="meter-row">
       <div class="meter-top">
         <span class="meter-icon">🚌</span>
@@ -483,24 +444,34 @@
     </div>
   </div>
 
+  <!-- Footer with App Store Badge -->
   <div class="footer">
     <strong>EGK ENERGY CRISIS AI</strong><br>
+    Available on the App Store<br>
+    
+    <a href="https://apps.apple.com/us/app/egk-energycrisis-ai/id6762322149" target="_blank" class="app-store-badge">
+      <img src="https://is1-ssl.mzstatic.com/image/thumb/PurpleSource221/v4/38/28/3e/38283e19-3827-4c77-de6f-c091091f724f/Placeholder.mill/1024x1024bb.png" 
+           alt="EGK EnergyCrisis AI" class="app-icon">
+      <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" 
+           alt="Download on the App Store" height="40">
+    </a>
+    
+    <br>
     © 2025 EGK Microelectronic Solutions Group Sdn. Bhd.<br>
-    egkhor.com.my
+    <a href="https://egkhor.com.my" style="color:var(--muted); text-decoration:none;">egkhor.com.my</a>
   </div>
-
 </div>
 
 <script>
 // ===== Oil price live ticker =====
 let basePrice = 87.45;
-const oilEl  = document.getElementById('oilPrice');
-const wtiEl  = document.getElementById('wtiPrice');
-const lngEl  = document.getElementById('lngPrice');
+const oilEl = document.getElementById('oilPrice');
+const wtiEl = document.getElementById('wtiPrice');
+const lngEl = document.getElementById('lngPrice');
 
 // Sparkline
 const canvas = document.getElementById('sparkCanvas');
-const ctx    = canvas.getContext('2d');
+const ctx = canvas.getContext('2d');
 const prices = [];
 for (let i = 0; i < 30; i++) {
   basePrice += (Math.random() - 0.5) * 1.2;
@@ -514,7 +485,6 @@ function drawSparkline() {
   const min = Math.min(...prices), max = Math.max(...prices);
   const range = max - min || 1;
   const step = w / (prices.length - 1);
-
   ctx.beginPath();
   prices.forEach((p, i) => {
     const x = i * step;
@@ -526,7 +496,6 @@ function drawSparkline() {
   ctx.lineJoin = 'round';
   ctx.stroke();
 
-  // Gradient fill
   const grad = ctx.createLinearGradient(0, 0, 0, h);
   grad.addColorStop(0, 'rgba(0,180,255,0.15)');
   grad.addColorStop(1, 'rgba(0,180,255,0)');
@@ -551,28 +520,26 @@ setInterval(updatePrices, 2500);
 // ===== Animate impact meters on load =====
 window.addEventListener('load', () => {
   setTimeout(() => {
-    document.getElementById('fuelFill').style.width  = '78%';
-    document.getElementById('foodFill').style.width  = '63%';
-    document.getElementById('elecFill').style.width  = '48%';
+    document.getElementById('fuelFill').style.width = '78%';
+    document.getElementById('foodFill').style.width = '63%';
+    document.getElementById('elecFill').style.width = '48%';
     document.getElementById('transFill').style.width = '72%';
   }, 400);
 });
 
 // ===== Live meter fluctuation =====
 function fluctuateMeters() {
-  const fuelPct  = 68 + Math.random() * 20;
-  const foodPct  = 55 + Math.random() * 18;
-  const elecPct  = 40 + Math.random() * 20;
+  const fuelPct = 68 + Math.random() * 20;
+  const foodPct = 55 + Math.random() * 18;
+  const elecPct = 40 + Math.random() * 20;
   const transPct = 62 + Math.random() * 18;
-
-  document.getElementById('fuelFill').style.width  = fuelPct + '%';
-  document.getElementById('foodFill').style.width  = foodPct + '%';
-  document.getElementById('elecFill').style.width  = elecPct + '%';
+  document.getElementById('fuelFill').style.width = fuelPct + '%';
+  document.getElementById('foodFill').style.width = foodPct + '%';
+  document.getElementById('elecFill').style.width = elecPct + '%';
   document.getElementById('transFill').style.width = transPct + '%';
-
-  document.getElementById('fuelVal').textContent  = Math.round(fuelPct) + '%';
-  document.getElementById('foodVal').textContent  = Math.round(foodPct) + '%';
-  document.getElementById('elecVal').textContent  = Math.round(elecPct) + '%';
+  document.getElementById('fuelVal').textContent = Math.round(fuelPct) + '%';
+  document.getElementById('foodVal').textContent = Math.round(foodPct) + '%';
+  document.getElementById('elecVal').textContent = Math.round(elecPct) + '%';
   document.getElementById('transVal').textContent = Math.round(transPct) + '%';
 }
 setInterval(fluctuateMeters, 4000);
@@ -588,7 +555,7 @@ function triggerSimAlert() {
   const el = document.getElementById('simAlert');
   el.textContent = events[Math.floor(Math.random() * events.length)];
   el.classList.remove('show');
-  void el.offsetWidth; // reflow
+  void el.offsetWidth;
   el.classList.add('show');
 }
 
